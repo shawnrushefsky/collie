@@ -16,7 +16,7 @@ jobs:
       - run: npm run build
 
       - name: compress for upload
-        run: zip collie.zip dist/index.js
+        run: zip --junk-paths collie.zip dist/index.js
 
       - name: Configure AWS credentials from Test account
         uses: aws-actions/configure-aws-credentials@v1
