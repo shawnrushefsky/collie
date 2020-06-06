@@ -28,10 +28,9 @@ jobs:
       - name: Upload to s3
         run: |
           aws s3 cp collie.zip s3://collie-search-packages/collie.zip
-          
+
       - name: Update lambda code
         run: |
           aws lambda update-function-code \
           --function-name api-testing \
-          --s3-bucket collie-search-packages \
-          --s3-key collie.zip
+          --zip-file collie.zip
