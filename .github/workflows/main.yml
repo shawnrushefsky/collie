@@ -1,0 +1,31 @@
+name: "Deploy Lambda Code To S3"
+on:
+  push:
+    branches:
+      -master
+
+jobs:
+  build:
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2-beta
+        with:
+          node-version: '12'
+      - run: npm install
+      - run: npm run build
+      - run: zip collie.zip dist/index.js
+      - uses: actions/upload-artifact@v1
+        name: archive
+        path: collie.zip
+  
+  upload:
+    steps:
+      - uses: actions/download-artifact@v1
+        with:
+          name: archive
+      - env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        runs: |
+          aws s3 cp archive/collie.zip s3://collie-search-packages/collie.zip
+    
