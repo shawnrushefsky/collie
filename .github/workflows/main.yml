@@ -15,8 +15,9 @@ jobs:
       - run: npm run build
       - run: zip collie.zip dist/index.js
       - uses: actions/upload-artifact@v1
-        name: archive
-        path: collie.zip
+        with:
+          name: archive
+          path: collie.zip
   
   upload:
     steps:
