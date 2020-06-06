@@ -26,8 +26,7 @@ jobs:
       - uses: actions/download-artifact@v1
         with:
           name: archive
-      - uses: actions/checkout@v2
-        env:
+      - env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: us-east-1
