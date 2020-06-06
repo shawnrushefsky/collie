@@ -21,6 +21,7 @@ jobs:
           path: collie.zip
   
   upload:
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v1
