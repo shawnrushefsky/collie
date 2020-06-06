@@ -17,7 +17,7 @@ module.exports = {
   },
   target: 'node',
   output: {
-    filename: 'bundle.js',
+    filename: 'index.js',
     libraryTarget: 'umd',
     globalObject: 'this'
   }
