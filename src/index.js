@@ -1,14 +1,13 @@
 const elasticlunr = require('elasticlunr');
-const S3 = require('aws-sdk/clients/s3');
+const DynamoDB = require('aws-sdk/clients/dynamodb');
 
 const {
-  INDEX_S3_BUCKET,
-  INDEX_S3_PREFIX
+  INDEX_DYNAMO_TABLE
 } = process.env;
 
-const s3 = new S3({
-  apiVersion: '2006-03-01'
-})
+const dynamo = new DynamoDB({
+  apiVersion: '2012-08-10'
+});
 
 const GETSyntaxError = {
   statusCode: 400,
@@ -35,22 +34,62 @@ const ErrorLoadingIndex = {
   body: 'An error was encountered while trying to load the index.'
 }
 
-function getKeyName(indexName){
-  return `${INDEX_S3_PREFIX}${INDEX_S3_PREFIX ? '/' : ''}${indexName}-index.json`
-}
-
 async function loadIndex(indexName) {
-  const { Body } = await s3.getObject({
-    Bucket: INDEX_S3_BUCKET,
-    Key: getKeyName(indexName)
-  }).promise();
+  const rootParams = {
+    Key: {
+      id: {
+        S: `${indexName}-root`
+      }
+    },
+    TableName: INDEX_DYNAMO_TABLE
+  }
+  const { Item: { content: {S: rootDocRaw }}} = await dynamo.getItem(rootParams).promise();
+  const rootDoc = JSON.parse(rootDocRaw);
 
-  return elasticlunr.Index.load(JSON.parse(Body.toString()));
+  console.log(rootDoc);
+
+  const allPromises = [];
+  const keys = [];
+
+  const docStoreParams = {
+    Key: {
+      id: {
+        S: rootDoc.documentStore
+      }
+    },
+    TableName: INDEX_DYNAMO_TABLE
+  }
+  allPromises.push(dynamo.getItem(docStoreParams).promise());
+  keys.push('documentStore');
+
+  for (let key in rootDoc.index) {
+    const indexParams = {
+      Key: {
+        id: {
+          S: rootDoc.index[key]
+        }
+      },
+      TableName: INDEX_DYNAMO_TABLE
+    }
+    allPromises.push(dynamo.getItem(indexParams).promise());
+    keys.push(key);
+  }
+
+  const resolved = await Promise.all(allPromises);
+  rootDoc.documentStore = JSON.parse(resolved[0].Item.content.S);
+  for (let i = 1; i < resolved.length; i++) {
+    rootDoc.index[keys[i]] = JSON.parse(resolved[i].Item.content.S);
+  }
+
+  console.log(rootDoc);
+
+  return elasticlunr.Index.load(rootDoc);
 }
 
 async function createIndex(indexName, body) {
   const index = elasticlunr(function(){
     this.setRef(body.primary_key);
+    this.saveDocument(false);
 
     for (let field of body.fields) {
       this.addField(field);
@@ -61,12 +100,64 @@ async function createIndex(indexName, body) {
 }
 
 async function saveIndex(indexName, index) {
-  const params = {
-    Bucket: INDEX_S3_BUCKET,
-    Key: getKeyName(indexName),
-    Body: JSON.stringify(index)
+  const allPromises = [];
+  const rootDoc = {
+    version: elasticlunr.version,
+    fields: index._fields,
+    ref: index._ref,
+    documentStore: `${indexName}-documentStore`,
+    pipeline: index.pipeline.toJSON(),
+    index: {}
   }
-  await s3.putObject(params).promise()
+
+  for (let field of rootDoc.fields) {
+    rootDoc.index[field] = `${indexName}-index-${field}`
+
+    const indexParams = {
+      Item: { 
+        content: { 
+          S: JSON.stringify(index.index[field]) 
+        },
+        id: {
+          S: `${indexName}-index-${field}`
+        }
+      },
+      TableName: INDEX_DYNAMO_TABLE
+    };
+    allPromises.push(dynamo.putItem(indexParams).promise());
+  }
+
+  const docStoreParams = {
+    Item: {
+      content: {
+        S: JSON.stringify(index.documentStore)
+      },
+      id: {
+        S: `${indexName}-documentStore`
+      }
+    },
+    TableName: INDEX_DYNAMO_TABLE
+  }
+  allPromises.push(dynamo.putItem(docStoreParams).promise());
+
+  const rootParams = {
+    Item: {
+      content: {
+        S: JSON.stringify(rootDoc)
+      },
+      id: {
+        S: `${indexName}-root`
+      }
+    },
+    TableName: INDEX_DYNAMO_TABLE
+  }
+  allPromises.push(dynamo.putItem(rootParams).promise());
+
+  await Promise.all(allPromises);
+}
+
+async function updateIndex(indexName, oldIndex, newIndex) {
+  
 }
 
 exports.handler = async (event) => {
