@@ -1,0 +1,35 @@
+{
+  "name": "collie",
+  "version": "1.0.0",
+  "description": "A serverless, pay-on-demand search engine for small applications, built on elasticlunr.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shawnrushefsky/collie.git"
+  },
+  "keywords": [
+    "search",
+    "serverless",
+    "lambda",
+    "lunr"
+  ],
+  "author": "Shawn Rushefsky",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/shawnrushefsky/collie/issues"
+  },
+  "homepage": "https://github.com/shawnrushefsky/collie#readme",
+  "dependencies": {
+    "aws-sdk": "2.691.0",
+    "elasticlunr": "^0.9.5"
+  },
+  "devDependencies": {
+    "terser-webpack-plugin": "^3.0.3",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.11"
+  }
+}
