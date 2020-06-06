@@ -2,7 +2,7 @@ name: "Deploy Lambda Code To S3"
 on:
   push:
     branches:
-      -master
+      - master
 
 jobs:
   build:
