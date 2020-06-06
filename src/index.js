@@ -51,6 +51,7 @@ async function loadIndex(indexName) {
 async function createIndex(indexName, body) {
   const index = elasticlunr(function(){
     this.setRef(body.primary_key);
+    this.saveDocument(false);
 
     for (let field of body.fields) {
       this.addField(field);
