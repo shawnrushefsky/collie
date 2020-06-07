@@ -20,7 +20,7 @@ However, Collie is perfect for hobbie projects where you expect relatively low u
 
 ## Deploying
 
-Collie must be run as a Lambda behind an API Gateway. You should grab `collie.zip` from the lastest release, and deploy that as your lambda code. Do not attempt to deploy the raw source code from this repo, as it is ~60MB instead of the 182KB of the compressed and minified artifact.
+Collie must be run as a Lambda behind an API Gateway. You should grab `collie.zip` from the [lastest release](https://github.com/shawnrushefsky/collie/releases/latest), and deploy that as your lambda code. Do not attempt to deploy the raw source code from this repo, as it is ~60MB instead of the 182KB of the compressed and minified artifact.
 
 ## API
 
