@@ -7,8 +7,8 @@ Like the Border Collie for which it is named, collie is pretty good at small sea
 
 ### Benefits
 
-- Collie is very small. In fact, the zipped lambda code is less than 200KB, and it uses less than 128MB of memory when in use. With an average response time of less than 400ms, collie costs around $0.0000010332/request, or 967,866 requests per dollar.
-- Collie very cheap. It uses [Amazon S3](https://aws.amazon.com/s3/) to store its index, and its index will never exceed 25MB. This means storage costs will never exceed $0.026/mo. Plus, S3 offers 11 nines of durability, so your data isn't going anywhere.
+- Collie is very small. In fact, the zipped lambda code is less than 200KB, and it uses less than 128MB of memory when in use. With an average response time of less than 400ms, Collie costs around $0.0000010332/request, or 967,866 requests per dollar.
+- Collie is very cheap. It uses [Amazon S3](https://aws.amazon.com/s3/) to store its index, and its index will never exceed 25MB. This means storage costs will never exceed $0.026/mo. Plus, S3 offers 11 nines of durability, so your data isn't going anywhere.
 
 These factors combined mean Collie is the absolute cheapest, smallest hosted search engine in the world, with performance that is technically usable.
 
