@@ -1,8 +1,8 @@
-name: "Deploy Lambda Code To S3"
+name: "Create Deployable Lambda Package"
 on:
   push:
-    branches:
-      - master
+    tags:
+      - 'v*'
 
 jobs:
   build-and-upload:
@@ -18,15 +18,23 @@ jobs:
       - name: compress for upload
         run: zip --junk-paths collie.zip dist/index.js
 
-      - name: Configure AWS credentials from Test account
-        uses: aws-actions/configure-aws-credentials@v1
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-
-      - name: Update lambda code
-        run: |
-          aws lambda update-function-code \
-          --function-name api-testing \
-          --zip-file fileb://collie.zip
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+          
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+          asset_path: ./collie.zip
+          asset_name: collie.zip
+          asset_content_type: application/zip
