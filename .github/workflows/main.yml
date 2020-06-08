@@ -16,7 +16,7 @@ jobs:
       - run: npm run build
 
       - name: compress for upload
-        run: zip --junk-paths collie.zip dist/index.js
+        run: zip --junk-paths collie-api.zip dist/api/index.js
 
       - name: Create Release
         id: create_release
@@ -35,6 +35,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-          asset_path: ./collie.zip
-          asset_name: collie.zip
+          asset_path: ./collie-api.zip
+          asset_name: collie-api.zip
           asset_content_type: application/zip

@@ -1,7 +1,7 @@
 const TerserPlugin = require('terser-webpack-plugin')
 module.exports = {
   mode: 'development',
-  entry: "./src/index.js",
+  entry: "./api/index.js",
   optimization: {
     minimize: true,
     minimizer: [new TerserPlugin({
@@ -16,7 +16,7 @@ module.exports = {
   },
   target: 'node',
   output: {
-    filename: 'index.js',
+    filename: 'api/index.js',
     libraryTarget: 'umd',
     globalObject: 'this'
   }
