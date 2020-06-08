@@ -36,6 +36,13 @@ async function createIndex(indexName, body) {
   await saveIndex(indexName, index);
 }
 
+async function indexExists(indexName) {
+  await s3.headObject({
+    Bucket: INDEX_S3_BUCKET,
+    Key: getKeyName(indexName)
+  }).promise();
+}
+
 async function saveIndex(indexName, index) {
   const params = {
     Bucket: INDEX_S3_BUCKET,
@@ -49,5 +56,6 @@ module.exports = {
   getKeyName,
   loadIndex,
   createIndex,
-  saveIndex
+  saveIndex,
+  indexExists
 }

@@ -1,6 +1,6 @@
 {
   "name": "collie",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A serverless, pay-on-demand search engine for small applications, built on elasticlunr.",
   "main": "index.js",
   "scripts": {

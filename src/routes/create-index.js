@@ -4,16 +4,16 @@ const {
 } = require('../errors');
 
 const {
-  loadIndex,
+  indexExists,
   createIndex
 } = require('../util');
 
 async function createIndexHandler(event, indexName) {
   try {
-    await loadIndex(indexName);
+    await indexExists(indexName);
 
     return {
-      statusCode: 200,
+      statusCode: 403,
       body: `Index ${indexName} already existed.`
     }
   } catch (e) {
