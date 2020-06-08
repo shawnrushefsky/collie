@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack --config api.config.js"
+    "build": "npm run build-api && npm run build-indexer",
+    "build-api": "webpack --config api.config.js",
+    "build-indexer": "webpack --config indexer.config.js"
   },
   "repository": {
     "type": "git",
