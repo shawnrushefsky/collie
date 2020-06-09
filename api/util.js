@@ -4,7 +4,8 @@ const SQS = require('aws-sdk/clients/sqs');
 
 const {
   INDEX_S3_BUCKET,
-  INDEX_S3_PREFIX
+  INDEX_S3_PREFIX,
+  STACK_NAME
 } = process.env;
 
 const s3 = new S3({
@@ -19,7 +20,7 @@ function getKeyName(indexName){
 }
 
 function getQueueName(indexName) {
-  return `${INDEX_S3_PREFIX}${INDEX_S3_PREFIX ? '/' : ''}${indexName}-ingest`
+  return `${STACK_NAME}${STACK_NAME ? '-' : ''}${INDEX_S3_PREFIX}${INDEX_S3_PREFIX ? '-' : ''}${indexName}-ingest`
 }
 
 async function loadIndex(indexName) {
