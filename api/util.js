@@ -70,6 +70,7 @@ async function saveIndex(indexName, index) {
     Key: getKeyName(indexName),
     Body: JSON.stringify(index)
   }
+  console.log(params);
   await s3.putObject(params).promise()
 }
 
