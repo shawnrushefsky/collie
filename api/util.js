@@ -49,7 +49,7 @@ async function createIndex(indexName, body) {
     QueueName: getQueueName(indexName),
     Attributes: {
       FifoQueue: String(true),
-      VisabilityTimeout: String(60 * 5) // 5 minutes
+      VisibilityTimeout: String(60 * 5) // 5 minutes
     }
   }).promise();
   console.log(QueueUrl);
