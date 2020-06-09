@@ -2,11 +2,14 @@ const elasticlunr = require('elasticlunr');
 const S3 = require('aws-sdk/clients/s3');
 const SQS = require('aws-sdk/clients/sqs');
 
-const {
+let {
   INDEX_S3_BUCKET,
   INDEX_S3_PREFIX,
   STACK_NAME
 } = process.env;
+
+INDEX_S3_PREFIX = INDEX_S3_PREFIX || '';
+STACK_NAME = STACK_NAME || '';
 
 const s3 = new S3({
   apiVersion: '2006-03-01'
@@ -20,7 +23,7 @@ function getKeyName(indexName){
 }
 
 function getQueueName(indexName) {
-  return `${STACK_NAME}${STACK_NAME ? '-' : ''}${INDEX_S3_PREFIX}${INDEX_S3_PREFIX ? '-' : ''}${indexName}-ingest`
+  return `${STACK_NAME}${STACK_NAME ? '-' : ''}${INDEX_S3_PREFIX}${INDEX_S3_PREFIX ? '-' : ''}${indexName}-ingest.fifo`
 }
 
 async function loadIndex(indexName) {
