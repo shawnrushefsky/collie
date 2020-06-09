@@ -1,5 +1,6 @@
 const elasticlunr = require('elasticlunr');
 const S3 = require('aws-sdk/clients/s3');
+const SQS = require('aws-sdk/clients/sqs');
 
 const {
   INDEX_S3_BUCKET,
@@ -9,9 +10,16 @@ const {
 const s3 = new S3({
   apiVersion: '2006-03-01'
 })
+const sqs = new SQS({
+  apiVersion: '2012-11-5'
+});
 
 function getKeyName(indexName){
   return `${INDEX_S3_PREFIX}${INDEX_S3_PREFIX ? '/' : ''}${indexName}-index.json`
+}
+
+function getQueueName(indexName) {
+  return `${INDEX_S3_PREFIX}${INDEX_S3_PREFIX ? '/' : ''}${indexName}-ingest`
 }
 
 async function loadIndex(indexName) {
@@ -33,6 +41,14 @@ async function createIndex(indexName, body) {
     }
   });
 
+  const { QueueUrl } = await sqs.createQueue({
+    QueueName: getQueueName(indexName),
+    Attributes: {
+      FifoQueue: true,
+      VisabilityTimeout: 60 * 5 // 5 minutes
+    }
+  }).promise();
+
   await saveIndex(indexName, index);
 }
 
@@ -52,10 +68,14 @@ async function saveIndex(indexName, index) {
   await s3.putObject(params).promise()
 }
 
+
 module.exports = {
   getKeyName,
+  getQueueName,
   loadIndex,
   createIndex,
   saveIndex,
-  indexExists
+  indexExists,
+  s3,
+  sqs
 }

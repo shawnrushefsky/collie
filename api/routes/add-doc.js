@@ -1,13 +1,13 @@
 const {
   PUTSyntaxError,
-  ErrorLoadingIndex,
-  ErrorSavingIndex
+  ErrorAddingToIndex
 } = require('../errors');
 
 const {
-  loadIndex,
-  saveIndex
+  sqs,
+  getQueueName
 } = require('../util');
+
 
 async function addDocToIndexHandler(event, indexName) {
   if (!event.body) {
@@ -19,22 +19,25 @@ async function addDocToIndexHandler(event, indexName) {
     return PUTSyntaxError
   }
 
+  const { accountId } = event.requestContext;
   try {
-    const index = await loadIndex(indexName)
-    index.addDoc(body);
-    try {
-      await saveIndex(indexName, index);
-    } catch (e) {
-      return ErrorSavingIndex
-    }
+    const { QueueUrl } = await sqs.getQueueUrl({
+      QueueName: getQueueName(indexName),
+      QueueOwnerAWSAccountId: accountId
+    });
 
+    await sqs.sendMessage({
+      MessageBody: JSON.stringify(body),
+      QueueUrl
+    });
+    
     return {
-      statusCode: 200,
-      body: `Document added to index '${indexName}'`
+      statusCode: 202,
+      body: `${indexName}: Document Queued For Indexing`
     }
   } catch (e) {
     console.log(e);
-    return ErrorLoadingIndex
+    return ErrorAddingToIndex
   }
 }
 

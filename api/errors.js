@@ -7,6 +7,10 @@ module.exports = {
     statusCode: 500,
     body: 'An error was encountered while trying to save the index.'
   },
+  ErrorAddingToIndex: {
+    statusCode: 500,
+    body: 'An error was encountered while trying to enqueue your document for indexing.'
+  },
   POSTSyntaxError: {
     statusCode: 400,
     body: 'You must include a JSON body like {primary_key, fields: []}'
