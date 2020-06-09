@@ -41,14 +41,15 @@ async function createIndex(indexName, body) {
       this.addField(field);
     }
   });
-
+  console.log(getQueueName(indexName))
   const { QueueUrl } = await sqs.createQueue({
     QueueName: getQueueName(indexName),
     Attributes: {
-      FifoQueue: true,
-      VisabilityTimeout: 60 * 5 // 5 minutes
+      FifoQueue: String(true),
+      VisabilityTimeout: String(60 * 5) // 5 minutes
     }
   }).promise();
+  console.log(QueueUrl);
 
   await saveIndex(indexName, index);
 }
