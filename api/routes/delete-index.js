@@ -13,6 +13,10 @@ async function deleteIndexHandler (event, indexName) {
     const release = await acquireLock(indexName);
     await deleteIndex(indexName);
     await release();
+    return {
+      statusCode: 200,
+      body: `Index ${indexName} successfully deleted.`
+    }
   } catch (e) {
     if (e.code === "AccessDenied") {
       return NonexistantIndexError
