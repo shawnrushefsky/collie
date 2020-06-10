@@ -20,7 +20,7 @@ const dynamodb = new DynamoDB.DocumentClient({
   apiVersion: "2012-08-10"
 });
 
-const lock = new DynamoDBLockClient.FailOpen({
+const lockClient = new DynamoDBLockClient.FailOpen({
   dynamodb,
   lockTable: LOCK_TABLE,
   partitionKey: LOCK_TABLE_PARTITION_KEY,
@@ -77,5 +77,5 @@ module.exports = {
   createIndex,
   indexExists,
   s3,
-  lock
+  lockClient
 }

@@ -6,7 +6,7 @@ const {
 const {
   indexExists,
   createIndex,
-  lock
+  lockClient
 } = require('../util');
 
 async function createIndexHandler(event, indexName) {
@@ -32,9 +32,9 @@ async function createIndexHandler(event, indexName) {
     }
 
     try {
-      await lock.acquireLock(indexName);
+      const lock = await lockClient.acquireLock(indexName);
       await createIndex(indexName, body);
-      await lock.release(indexName);
+      await lock.release();
       return {
         statusCode: 200,
         body: `Index ${indexName} successfully created.`

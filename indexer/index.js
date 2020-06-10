@@ -20,7 +20,7 @@ const dynamodb = new DynamoDB.DocumentClient({
   apiVersion: "2012-08-10"
 });
 
-const lock = new DynamoDBLockClient.FailOpen({
+const lockClient = new DynamoDBLockClient.FailOpen({
   dynamodb,
   lockTable: LOCK_TABLE,
   partitionKey: LOCK_TABLE_PARTITION_KEY,
@@ -64,7 +64,7 @@ exports.handler = async (event) => {
   }
 
   for (let indexName in messages) {
-    await lock.acquireLock(indexName);
+    const lock = await lockClient.acquireLock(indexName);
     const index = await loadIndex(indexName);
 
     for (let record of messages[indexName]) {
@@ -72,7 +72,7 @@ exports.handler = async (event) => {
     }
 
     await saveIndex(indexName, index);
-    await lock.release(indexName);
+    await lock.release();
   }
 
   return {}
