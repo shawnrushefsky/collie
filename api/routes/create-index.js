@@ -34,7 +34,7 @@ async function createIndexHandler(event, indexName) {
     try {
       await lock.acquireLock(indexName);
       await createIndex(indexName, body);
-      await lock.releaseLock(indexName);
+      await lock.release(indexName);
       return {
         statusCode: 200,
         body: `Index ${indexName} successfully created.`

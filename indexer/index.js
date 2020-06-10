@@ -72,7 +72,7 @@ exports.handler = async (event) => {
     }
 
     await saveIndex(indexName, index);
-    await lock.releaseLock(indexName);
+    await lock.release(indexName);
   }
 
   return {}
