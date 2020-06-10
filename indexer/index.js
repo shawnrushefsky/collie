@@ -1,9 +1,13 @@
 const elasticlunr = require('elasticlunr');
 const S3 = require('aws-sdk/clients/s3');
+const DynamoDBLockClient = require('dynamodb-lock-client');
+const DynamoDB = require('aws-sdk/clients/dynamodb');
 
 let {
   INDEX_S3_BUCKET,
   INDEX_S3_PREFIX,
+  LOCK_TABLE,
+  LOCK_TABLE_PARTITION_KEY
 } = process.env;
 
 INDEX_S3_PREFIX = INDEX_S3_PREFIX || '';
@@ -11,6 +15,19 @@ INDEX_S3_PREFIX = INDEX_S3_PREFIX || '';
 const s3 = new S3({
   apiVersion: '2006-03-01'
 })
+
+const dynamodb = new DynamoDB.DocumentClient({
+  apiVersion: "2012-08-10"
+});
+
+const lock = new DynamoDBLockClient.FailOpen({
+  dynamodb,
+  lockTable: LOCK_TABLE,
+  partitionKey: LOCK_TABLE_PARTITION_KEY,
+  heartbeatPeriodMs: 300,
+  leaseDurationMs: 5000,
+  trustLocalTime: true
+});
 
 function getKeyName(indexName){
   return `${INDEX_S3_PREFIX}${INDEX_S3_PREFIX ? '/' : ''}${indexName}-index.json`
@@ -35,7 +52,6 @@ async function saveIndex(indexName, index) {
 }
 
 exports.handler = async (event) => {
-  console.log(JSON.stringify(event));
   const messages = {};
 
   for (let record of event.Records) {
@@ -47,9 +63,8 @@ exports.handler = async (event) => {
     messages[indexName].push(JSON.parse(record.body));
   }
 
-  console.log(messages);
-
   for (let indexName in messages) {
+    await lock.acquireLock(indexName);
     const index = await loadIndex(indexName);
 
     for (let record of messages[indexName]) {
@@ -57,6 +72,7 @@ exports.handler = async (event) => {
     }
 
     await saveIndex(indexName, index);
+    await lock.releaseLock(indexName);
   }
 
   return {}

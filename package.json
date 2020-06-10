@@ -27,6 +27,7 @@
   "homepage": "https://github.com/shawnrushefsky/collie#readme",
   "dependencies": {
     "aws-sdk": "2.691.0",
+    "dynamodb-lock-client": "^0.7.2",
     "elasticlunr": "^0.9.5"
   },
   "devDependencies": {
