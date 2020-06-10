@@ -2,6 +2,7 @@ const elasticlunr = require('elasticlunr');
 const S3 = require('aws-sdk/clients/s3');
 const DynamoDBLockClient = require('dynamodb-lock-client');
 const DynamoDB = require('aws-sdk/clients/dynamodb');
+const util = require('util');
 
 let {
   INDEX_S3_BUCKET,
@@ -64,7 +65,7 @@ exports.handler = async (event) => {
   }
 
   for (let indexName in messages) {
-    const lock = await lockClient.acquireLock(indexName);
+    const lock = await util.promisify(lockClient.acquireLock)(indexName);
     const index = await loadIndex(indexName);
 
     for (let record of messages[indexName]) {
@@ -72,7 +73,7 @@ exports.handler = async (event) => {
     }
 
     await saveIndex(indexName, index);
-    await lock.release();
+    await util.promisify(lock.release)();
   }
 
   return {}
