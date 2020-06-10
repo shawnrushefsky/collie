@@ -56,7 +56,7 @@ exports.handler = async (event) => {
       index.addDoc(record);
     }
 
-    await saveIndex(indexName);
+    await saveIndex(indexName, index);
   }
 
   return {}
