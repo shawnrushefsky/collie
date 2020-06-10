@@ -32,11 +32,11 @@ async function addDocToIndexHandler(event, indexName) {
   }
 
   try {
-    const resp = await sqs.sendMessage({
+    await sqs.sendMessage({
       MessageGroupId: indexName,
       MessageBody: JSON.stringify(body),
       QueueUrl: QUEUE_URL
-    });
+    }).promise();
 
     console.log(resp);
     
