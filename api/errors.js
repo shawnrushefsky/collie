@@ -22,5 +22,9 @@ module.exports = {
   GETSyntaxError: {
     statusCode: 400,
     body: 'Path should be /search/:index?query=<search-query>'
+  },
+  NonexistantIndexError: {
+    statusCode: 404,
+    body: 'Index does not exist'
   }
 }

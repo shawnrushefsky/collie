@@ -1,7 +1,10 @@
 const {
   PUTSyntaxError,
-  ErrorAddingToIndex
+  ErrorAddingToIndex,
+  NonexistantIndexError
 } = require('../errors');
+
+const { indexExists } = require('../util');
 
 const SQS = require('aws-sdk/clients/sqs');
 const sqs = new SQS({
@@ -19,6 +22,13 @@ async function addDocToIndexHandler(event, indexName) {
   const body = JSON.parse(event.body);
   if (!body.hasOwnProperty('id')) {
     return PUTSyntaxError
+  }
+
+  try {
+    await indexExists(indexName);
+  } catch (e) {
+    console.log(e);
+    return NonexistantIndexError
   }
 
   try {

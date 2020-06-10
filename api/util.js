@@ -10,7 +10,7 @@ INDEX_S3_PREFIX = INDEX_S3_PREFIX || '';
 
 const s3 = new S3({
   apiVersion: '2006-03-01'
-})
+});
 
 function getKeyName(indexName){
   return `${INDEX_S3_PREFIX}${INDEX_S3_PREFIX ? '/' : ''}${indexName}-index.json`
@@ -45,21 +45,10 @@ async function indexExists(indexName) {
   }).promise();
 }
 
-async function saveIndex(indexName, index) {
-  const params = {
-    Bucket: INDEX_S3_BUCKET,
-    Key: getKeyName(indexName),
-    Body: JSON.stringify(index)
-  }
-  await s3.putObject(params).promise()
-}
-
-
 module.exports = {
   getKeyName,
   loadIndex,
   createIndex,
-  saveIndex,
   indexExists,
   s3,
 }
