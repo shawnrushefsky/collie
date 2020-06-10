@@ -38,8 +38,6 @@ async function addDocToIndexHandler(event, indexName) {
       QueueUrl: QUEUE_URL
     }).promise();
 
-    console.log(resp);
-    
     return {
       statusCode: 202,
       body: `${indexName}: Document Queued For Indexing`
