@@ -59,3 +59,7 @@ The `ref` field is the primary key value of the document that matched.
   ]
 }
 ```
+
+### DELETE /search/:index
+
+deletes an index

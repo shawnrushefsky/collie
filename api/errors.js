@@ -11,6 +11,10 @@ module.exports = {
     statusCode: 500,
     body: 'An error was encountered while trying to enqueue your document for indexing.'
   },
+  ErrorDeletingIndex: {
+    statusCode: 500,
+    body: 'An error was encountered while trying to delete your index.'
+  },
   POSTSyntaxError: {
     statusCode: 400,
     body: 'You must include a JSON body like {primary_key, fields: []}'

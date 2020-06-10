@@ -1,6 +1,7 @@
 const { queryHandler } = require('./routes/query');
 const { addDocToIndexHandler } = require('./routes/add-doc');
 const { createIndexHandler } = require('./routes/create-index');
+const { deleteIndexHandler } = require('./routes/delete-index');
 
 exports.handler = async (event) => {
   const { method, path } = event.requestContext.http;
@@ -32,6 +33,10 @@ exports.handler = async (event) => {
   // This endpoint creates an index. No-op if index already exists.
   else if (method === 'POST') {
     return await createIndexHandler(event, indexName);
+  }
+
+  else if (method === "DELETE") {
+    return await deleteIndexHandler(event, indexName);
   }
 
   else {

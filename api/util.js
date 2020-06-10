@@ -91,11 +91,19 @@ async function saveIndex(indexName, index) {
   await s3.putObject(params).promise()
 }
 
+async function deleteIndex(indexName) {
+  await s3.deleteObject({
+    Bucket: INDEX_S3_BUCKET,
+    Key: getKeyName(indexName)
+  }).promise();
+}
+
 module.exports = {
   getKeyName,
   loadIndex,
   createIndex,
   indexExists,
   s3,
-  acquireLock
+  acquireLock,
+  deleteIndex
 }
