@@ -2,7 +2,6 @@ const elasticlunr = require('elasticlunr');
 const S3 = require('aws-sdk/clients/s3');
 const DynamoDBLockClient = require('dynamodb-lock-client');
 const DynamoDB = require('aws-sdk/clients/dynamodb');
-const util = require('util');
 
 let {
   INDEX_S3_BUCKET,
@@ -29,6 +28,26 @@ const lockClient = new DynamoDBLockClient.FailOpen({
   leaseDurationMs: 5000,
   trustLocalTime: true
 });
+
+function acquireLock(indexName) {
+  return new Promise((resolve, reject) => {
+    lockClient.acquireLock(indexName, (e, lock) => {
+      if (e) {
+        return reject(e);
+      }
+      return resolve(function release() {
+        return new Promise((resolve, reject) => {
+          lock.release((e) => {
+            if (e) {
+              return reject(e);
+            }
+            return resolve()
+          });
+        });
+      });
+    });
+  });
+}
 
 function getKeyName(indexName){
   return `${INDEX_S3_PREFIX}${INDEX_S3_PREFIX ? '/' : ''}${indexName}-index.json`
@@ -78,5 +97,5 @@ module.exports = {
   createIndex,
   indexExists,
   s3,
-  acquireLock: util.promisify(lockClient.acquireLock)
+  acquireLock
 }
