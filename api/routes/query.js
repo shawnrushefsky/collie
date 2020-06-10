@@ -1,4 +1,4 @@
-const { ErrorLoadingIndex } = require('../errors');
+const { ErrorLoadingIndex, NonexistantIndexError } = require('../errors');
 const { loadIndex } = require('../util');
 
 async function queryHandler(event, indexName) {
@@ -19,6 +19,9 @@ async function queryHandler(event, indexName) {
       body: JSON.stringify(index.search(query))
     }
   } catch (e) {
+    if (e.code === "AccessDenied") {
+      return NonexistantIndexError
+    }
     console.log(e);
     return ErrorLoadingIndex
   }
