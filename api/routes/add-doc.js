@@ -3,10 +3,12 @@ const {
   ErrorAddingToIndex
 } = require('../errors');
 
-const {
-  sqs,
-  getQueueName
-} = require('../util');
+const SQS = require('aws-sdk/clients/sqs');
+const sqs = new SQS({
+  apiVersion: '2012-11-5'
+});
+
+const { QUEUE_URL } = process.env;
 
 
 async function addDocToIndexHandler(event, indexName) {
@@ -19,16 +21,11 @@ async function addDocToIndexHandler(event, indexName) {
     return PUTSyntaxError
   }
 
-  const { accountId } = event.requestContext;
   try {
-    const { QueueUrl } = await sqs.getQueueUrl({
-      QueueName: getQueueName(indexName),
-      QueueOwnerAWSAccountId: accountId
-    });
-
     await sqs.sendMessage({
+      MessageGroupId: indexName,
       MessageBody: JSON.stringify(body),
-      QueueUrl
+      QueueUrl: QUEUE_URL
     });
     
     return {
