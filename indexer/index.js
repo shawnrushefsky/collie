@@ -35,6 +35,7 @@ async function saveIndex(indexName, index) {
 }
 
 exports.handler = async (event) => {
+  console.log(event);
   const messages = {};
 
   for (let record of event.Records) {
@@ -44,6 +45,8 @@ exports.handler = async (event) => {
 
     messages[record.attributes.messageGroupId].push(JSON.parse(record.body));
   }
+
+  console.log(messages);
 
   for (let indexName in messages) {
     const index = await loadIndex(indexName);
