@@ -45,6 +45,15 @@ async function indexExists(indexName) {
   }).promise();
 }
 
+async function saveIndex(indexName, index) {
+  const params = {
+    Bucket: INDEX_S3_BUCKET,
+    Key: getKeyName(indexName),
+    Body: JSON.stringify(index)
+  }
+  await s3.putObject(params).promise()
+}
+
 module.exports = {
   getKeyName,
   loadIndex,
