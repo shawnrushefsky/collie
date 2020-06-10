@@ -4,11 +4,9 @@ const S3 = require('aws-sdk/clients/s3');
 let {
   INDEX_S3_BUCKET,
   INDEX_S3_PREFIX,
-  STACK_NAME
 } = process.env;
 
 INDEX_S3_PREFIX = INDEX_S3_PREFIX || '';
-STACK_NAME = STACK_NAME || '';
 
 const s3 = new S3({
   apiVersion: '2006-03-01'
