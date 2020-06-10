@@ -2,6 +2,7 @@ const elasticlunr = require('elasticlunr');
 const S3 = require('aws-sdk/clients/s3');
 const DynamoDBLockClient = require('dynamodb-lock-client');
 const DynamoDB = require('aws-sdk/clients/dynamodb');
+const util = require('util');
 
 let {
   INDEX_S3_BUCKET,
@@ -77,5 +78,5 @@ module.exports = {
   createIndex,
   indexExists,
   s3,
-  lockClient
+  acquireLock: util.promisify(lockClient.acquireLock)
 }

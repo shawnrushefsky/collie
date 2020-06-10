@@ -30,6 +30,8 @@ const lockClient = new DynamoDBLockClient.FailOpen({
   trustLocalTime: true
 });
 
+const acquireLock = util.promisify(lockClient.acquireLock);
+
 function getKeyName(indexName){
   return `${INDEX_S3_PREFIX}${INDEX_S3_PREFIX ? '/' : ''}${indexName}-index.json`
 }
@@ -65,7 +67,7 @@ exports.handler = async (event) => {
   }
 
   for (let indexName in messages) {
-    const lock = await util.promisify(lockClient.acquireLock)(indexName);
+    const lock = await acquireLock(indexName);
     const index = await loadIndex(indexName);
 
     for (let record of messages[indexName]) {

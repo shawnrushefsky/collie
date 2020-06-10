@@ -6,7 +6,7 @@ const {
 const {
   indexExists,
   createIndex,
-  lockClient
+  acquireLock
 } = require('../util');
 
 const util = require('util');
@@ -34,7 +34,7 @@ async function createIndexHandler(event, indexName) {
     }
 
     try {
-      const lock = await util.promisify(lockClient.acquireLock)(indexName);
+      const lock = await acquireLock(indexName);
       await createIndex(indexName, body);
       await util.promisify(lock.release)();
       return {
