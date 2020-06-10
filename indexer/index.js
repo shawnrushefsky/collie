@@ -35,15 +35,16 @@ async function saveIndex(indexName, index) {
 }
 
 exports.handler = async (event) => {
-  console.log(event);
+  console.log(JSON.stringify(event));
   const messages = {};
 
   for (let record of event.Records) {
-    if (!messages.hasOwnProperty(record.attributes.messageGroupId)) {
-      messages[record.attributes.messageGroupId] = [];
+    const indexName = record.attributes.MessageGroupId;
+    if (!messages.hasOwnProperty(indexName)) {
+      messages[indexName] = [];
     }
 
-    messages[record.attributes.messageGroupId].push(JSON.parse(record.body));
+    messages[indexName].push(JSON.parse(record.body));
   }
 
   console.log(messages);
